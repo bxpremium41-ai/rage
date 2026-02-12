@@ -14,6 +14,8 @@ import { GrowthEngine } from './components/GrowthEngine';
 import { ContactSection } from './components/ContactSection';
 import { Logo } from './components/Logo';
 import { Menu, X } from 'lucide-react';
+import { AnimatedGridPattern } from './components/ui/animated-grid-pattern';
+import { cn } from './lib/utils';
 
 const App: React.FC = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -33,10 +35,19 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-background text-on-background overflow-x-hidden">
+    <div className="min-h-screen flex flex-col font-sans bg-background text-on-background overflow-x-hidden relative">
       
-      {/* Background Grid - Global */}
-      <div className="fixed inset-0 bg-grid-pattern bg-grid opacity-60 pointer-events-none z-0"></div>
+      {/* Background Grid - Global Animated */}
+      <AnimatedGridPattern
+        numSquares={40}
+        maxOpacity={0.2}
+        duration={4}
+        repeatDelay={1}
+        className={cn(
+          "[mask-image:radial-gradient(1200px_circle_at_center,white,transparent)]",
+          "fixed inset-0 h-full w-full skew-y-0 -z-10 fill-secondary/10 stroke-secondary/10 text-secondary/30",
+        )}
+      />
 
       {/* Navigation */}
       <nav className="fixed w-full top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-secondary/10 transition-all duration-300">
