@@ -69,6 +69,29 @@ export function ImageCarouselHero({
             <span className="text-xs font-semibold tracking-wide text-secondary uppercase">{subtitle}</span>
         </div>
 
+        {/* Content Section */}
+        <div className="relative z-20 text-center max-w-5xl mx-auto mb-12 sm:mb-16">
+          <h1 className="font-display font-bold text-4xl md:text-7xl leading-[1.1] tracking-tight text-primary mb-6">
+            {title}
+          </h1>
+
+          <p className="text-lg sm:text-2xl text-secondary font-light mb-8 max-w-2xl mx-auto leading-relaxed">{description}</p>
+
+          {/* CTA Button */}
+          <button
+            onClick={onCtaClick}
+            className={cn(
+              "inline-flex items-center gap-3 px-8 py-4 md:px-10 md:py-5 rounded-full",
+              "bg-accent text-white font-bold text-lg md:text-xl",
+              "hover:bg-emerald-500 hover:scale-105 shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all duration-300 uppercase tracking-wide",
+              "group",
+            )}
+          >
+            {ctaText}
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+
         {/* Carousel Container */}
         <div
           className="relative w-full max-w-6xl h-80 sm:h-[400px] mb-12 sm:mb-16"
@@ -130,7 +153,7 @@ export function ImageCarouselHero({
                          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
                          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
                          title={item.alt}
-                         loading="eager"
+                         loading="lazy"
                        />
                     ) : (
                         <img
@@ -147,29 +170,6 @@ export function ImageCarouselHero({
               )
             })}
           </div>
-        </div>
-
-        {/* Content Section */}
-        <div className="relative z-20 text-center max-w-5xl mx-auto mb-12 sm:mb-16">
-          <h1 className="font-display font-bold text-4xl md:text-7xl leading-[1.1] tracking-tight text-primary mb-6">
-            {title}
-          </h1>
-
-          <p className="text-lg sm:text-2xl text-secondary font-light mb-8 max-w-2xl mx-auto leading-relaxed">{description}</p>
-
-          {/* CTA Button */}
-          <button
-            onClick={onCtaClick}
-            className={cn(
-              "inline-flex items-center gap-3 px-8 py-4 md:px-10 md:py-5 rounded-full",
-              "bg-accent text-white font-bold text-lg md:text-xl",
-              "hover:bg-emerald-500 hover:scale-105 shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all duration-300 uppercase tracking-wide",
-              "group",
-            )}
-          >
-            {ctaText}
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
         </div>
 
         {/* Features Section */}
