@@ -35,6 +35,7 @@ export function ImageCarouselHero({
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
   const [rotatingCards, setRotatingCards] = useState<number[]>([])
+  const [radius, setRadius] = useState(220)
 
   // Continuous rotation animation
   useEffect(() => {
@@ -49,6 +50,22 @@ export function ImageCarouselHero({
   useEffect(() => {
     setRotatingCards(items.map((_, i) => i * (360 / items.length)))
   }, [items.length])
+
+  // Responsive Radius
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setRadius(520); // Much larger radius for desktop to accommodate massive cards
+      } else {
+        setRadius(190); // Larger radius for mobile
+      }
+    };
+    
+    handleResize(); // Set initial
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -94,7 +111,7 @@ export function ImageCarouselHero({
 
         {/* Carousel Container */}
         <div
-          className="relative w-full max-w-6xl h-80 sm:h-[400px] mb-12 sm:mb-16"
+          className="relative w-full max-w-[1400px] h-[30rem] md:h-[45rem] mb-12 sm:mb-16"
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
@@ -103,7 +120,6 @@ export function ImageCarouselHero({
           <div className="absolute inset-0 flex items-center justify-center perspective">
             {items.map((item, index) => {
               const angle = (rotatingCards[index] || 0) * (Math.PI / 180)
-              const radius = 220 // Increased radius for wider cards
               const x = Math.cos(angle) * radius
               const y = Math.sin(angle) * radius
 
@@ -124,10 +140,10 @@ export function ImageCarouselHero({
               return (
                 <div
                   key={item.id}
-                  // Changed dimensions to 4:3 aspect ratio (landscape)
-                  // Mobile: w-52 (13rem/208px) -> h-[9.75rem] (156px)
-                  // Desktop: w-64 (16rem/256px) -> h-48 (12rem/192px)
-                  className="absolute w-52 h-[9.75rem] sm:w-64 sm:h-48 transition-transform duration-100 ease-linear"
+                  // Dimensions updated for MAXIMUM impact
+                  // Mobile: w-72 (18rem/288px) -> h-[13.5rem] (216px) (4:3)
+                  // Desktop: w-[35rem] (560px) -> h-[26.25rem] (420px) (4:3)
+                  className="absolute w-72 h-[13.5rem] md:w-[35rem] md:h-[26.25rem] transition-transform duration-100 ease-linear"
                   style={{
                     transform: `
                       translate(${x}px, ${y * 0.4}px) 
@@ -144,7 +160,7 @@ export function ImageCarouselHero({
                     className={cn(
                       "relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white",
                       "transition-all duration-300 hover:scale-105 hover:border-accent",
-                      "cursor-pointer group bg-black", // Changed bg-white to bg-black for videos
+                      "cursor-pointer group bg-black", 
                     )}
                   >
                     {item.type === 'video' ? (
