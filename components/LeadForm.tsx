@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Lead } from '../types';
-import { CheckCircle2, Loader2, ArrowRight, ArrowLeft, Ruler, PenTool, Hammer, HelpCircle, Calendar, Clock, User, Mail, Smartphone, Video, ChevronDown, X } from 'lucide-react';
+import { CheckCircle2, Loader2, ArrowRight, ArrowLeft, Ruler, PenTool, Hammer, HelpCircle, User, Mail, ChevronDown, X } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
@@ -38,7 +38,7 @@ const FormWrapper: React.FC<{ children: React.ReactNode; mode: 'section' | 'moda
 
 export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose }) => {
   const [step, setStep] = useState(1);
-  const totalSteps = 5; // Date -> Role -> Name -> Email -> Phone
+  const totalSteps = 4; // Role -> Name -> Email -> Phone
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   
   // Refs for auto-focusing inputs
@@ -70,55 +70,16 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
     phone: '',
     philosophy: 'Modernist',
     barrier: '',
-    scheduledDate: '',
-    scheduledTime: ''
   });
-
-  const [dates, setDates] = useState<{label: string, value: string, isToday: boolean}[]>([]);
-  const timeSlots = [
-    "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
-    "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", 
-    "05:00 PM", "06:00 PM", "07:00 PM"
-  ];
-
-  // Initialize Calendar Dates (Next 7 Days based on IST)
-  useEffect(() => {
-    const generateDates = () => {
-        const dateArray = [];
-        const now = new Date();
-        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-        const istOffset = 5.5 * 60 * 60 * 1000;
-        const istNow = new Date(utc + istOffset);
-
-        for (let i = 0; i < 7; i++) {
-            const d = new Date(istNow);
-            d.setDate(istNow.getDate() + i);
-            
-            const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
-            const dayNum = d.getDate();
-            
-            dateArray.push({
-                label: `${dayName} ${dayNum}`,
-                value: d.toISOString().split('T')[0], // YYYY-MM-DD
-                isToday: i === 0
-            });
-        }
-        setDates(dateArray);
-        if (!formData.scheduledDate && dateArray.length > 0) {
-            updateField('scheduledDate', dateArray[0].value);
-        }
-    };
-    generateDates();
-  }, []);
 
   useEffect(() => {
     updateField('phone', `${currentCountry.code} ${localPhone}`);
   }, [countryIso, localPhone]);
 
   useEffect(() => {
-    if (step === 3) setTimeout(() => nameInputRef.current?.focus(), 100);
-    if (step === 4) setTimeout(() => emailInputRef.current?.focus(), 100);
-    if (step === 5) setTimeout(() => phoneInputRef.current?.focus(), 100);
+    if (step === 2) setTimeout(() => nameInputRef.current?.focus(), 100);
+    if (step === 3) setTimeout(() => emailInputRef.current?.focus(), 100);
+    if (step === 4) setTimeout(() => phoneInputRef.current?.focus(), 100);
   }, [step]);
 
   const nextStep = () => {
@@ -131,9 +92,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-        if (step === 3 && formData.name) nextStep();
-        else if (step === 4 && formData.email) nextStep();
-        else if (step === 5 && localPhone) handleSubmit();
+        if (step === 2 && formData.name) nextStep();
+        else if (step === 3 && formData.email) nextStep();
+        else if (step === 4 && localPhone) handleSubmit();
     }
   };
 
@@ -146,6 +107,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
     try {
       const newLead = {
         ...formData,
+        type: 'contact_form', // Defaulting to contact form since booking is removed
         submittedAt: new Date().toISOString()
       };
       await addDoc(collection(db, "leads"), newLead);
@@ -168,19 +130,19 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
           <div className="w-24 h-24 bg-accent-light/20 rounded-full flex items-center justify-center mx-auto mb-6 neon-shadow">
             <CheckCircle2 className="w-10 h-10 text-accent" />
           </div>
-          <h2 className="text-3xl font-display font-bold mb-4 text-primary">Meeting Confirmed!</h2>
+          <h2 className="text-3xl font-display font-bold mb-4 text-primary">Details Received!</h2>
           <p className="text-lg mb-2 text-secondary">
              Thanks <strong>{formData.name}</strong>.
           </p>
           <p className="text-xl mb-8 font-bold text-primary">
-            We'll see you on <span className="text-accent">{formData.scheduledDate}</span> at <span className="text-accent">{formData.scheduledTime} (IST)</span>.
+            We'll be in touch with you shortly.
           </p>
           <div className="p-4 bg-secondary/5 rounded-xl text-sm text-secondary mb-8 inline-flex items-center gap-2">
-            <Video size={16} /> Our team will reach out to you soon.
+            <Mail size={16} /> Our team will review your info.
           </div>
           <button 
               onClick={() => {
-              setFormData({ role: 'Architect', name: '', email: '', phone: '', philosophy: 'Modernist', barrier: '', scheduledDate: '', scheduledTime: '' });
+              setFormData({ role: 'Architect', name: '', email: '', phone: '', philosophy: 'Modernist', barrier: '' });
               setLocalPhone('');
               setStep(1);
               setStatus('idle');
@@ -190,7 +152,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
               }}
               className="text-primary font-bold hover:text-accent underline transition-colors"
           >
-              {mode === 'modal' ? 'Close Window' : 'Schedule another meeting'}
+              {mode === 'modal' ? 'Close Window' : 'Submit another inquiry'}
           </button>
         </div>
       </FormWrapper>
@@ -202,72 +164,10 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
       case 1:
         return (
           <div className={containerClasses}>
-            <div className={`text-center space-y-1 md:space-y-2 shrink-0 ${mode === 'modal' ? '' : 'pt-4'}`}>
-                <span className="text-accent font-bold tracking-widest uppercase text-xs md:text-sm bg-accent/10 px-3 py-1 rounded-full">Step 1 of 5</span>
-                <h3 className="text-3xl md:text-4xl font-display font-bold text-primary pt-2 md:pt-4">Schedule a Free Meeting</h3>
-                <p className="text-secondary text-xs md:text-sm">Select a time (IST) to chat with our experts.</p>
-            </div>
-            
-            <div className={contentClasses}>
-                {/* Date Selection */}
-                <div className="mt-4 md:mt-8">
-                    <label className="block text-left text-xs font-bold uppercase tracking-widest text-secondary mb-2 md:mb-3">Select Date</label>
-                    <div className="flex gap-2 md:gap-3 overflow-x-auto pb-4 no-scrollbar">
-                        {dates.map((date) => (
-                            <button
-                                key={date.value}
-                                onClick={() => updateField('scheduledDate', date.value)}
-                                className={`flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
-                                    formData.scheduledDate === date.value
-                                    ? 'bg-primary border-primary text-white neon-shadow scale-105'
-                                    : 'bg-white border-secondary/10 text-secondary hover:border-accent'
-                                }`}
-                            >
-                                <span className={`text-[10px] md:text-xs font-bold uppercase ${formData.scheduledDate === date.value ? 'text-accent-light' : 'text-secondary/60'}`}>{date.isToday ? 'Today' : date.label.split(' ')[0]}</span>
-                                <span className="text-xl md:text-2xl font-display font-bold">{date.label.split(' ')[1]}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Time Selection */}
-                <div className="mt-2 md:mt-4 mb-4">
-                    <label className="block text-left text-xs font-bold uppercase tracking-widest text-secondary mb-2 md:mb-3">Select Time (IST)</label>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 md:gap-3">
-                        {timeSlots.map((time) => (
-                            <button
-                                key={time}
-                                onClick={() => updateField('scheduledTime', time)}
-                                className={`py-2 md:py-3 px-1 md:px-2 rounded-xl text-xs md:text-sm font-bold border transition-all duration-200 ${
-                                    formData.scheduledTime === time
-                                    ? 'bg-accent text-white border-accent shadow-lg scale-105'
-                                    : 'bg-white border-secondary/10 text-secondary hover:border-accent hover:text-primary'
-                                }`}
-                            >
-                                {time}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            <div className={footerClasses}>
-                <button 
-                    onClick={nextStep} 
-                    disabled={!formData.scheduledDate || !formData.scheduledTime} 
-                    className="w-full py-4 bg-primary text-white rounded-full font-bold text-lg hover:bg-black transition-all disabled:opacity-50 shadow-xl shadow-primary/20 neon-shadow flex items-center justify-center gap-2"
-                >
-                    Confirm Time <ArrowRight size={20} />
-                </button>
-            </div>
-          </div>
-        );
-      case 2:
-        return (
-          <div className={containerClasses}>
             <div className={`text-center space-y-2 shrink-0 ${mode === 'modal' ? '' : 'pt-4'}`}>
-                <span className="text-accent font-bold tracking-widest uppercase text-xs md:text-sm bg-accent/10 px-3 py-1 rounded-full">Step 2 of 5</span>
-                <h3 className="text-3xl md:text-4xl font-display font-bold text-primary pt-4">Tell us about your business</h3>
+                <span className="text-accent font-bold tracking-widest uppercase text-xs md:text-sm bg-accent/10 px-3 py-1 rounded-full">Step 1 of 4</span>
+                <h3 className="text-3xl md:text-4xl font-display font-bold text-primary pt-4">Connect with Us</h3>
+                <p className="text-xl text-secondary">Who are you?</p>
             </div>
             <div className={`${contentClasses} flex flex-col justify-center`}>
                 <div className="grid grid-cols-2 gap-4 max-w-xl mx-auto mt-8 w-full">
@@ -296,11 +196,11 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
             </div>
           </div>
         );
-      case 3:
+      case 2:
         return (
           <div className={containerClasses}>
              <div className={`text-center space-y-2 mb-8 shrink-0 ${mode === 'modal' ? '' : 'pt-4'}`}>
-                <span className="text-accent font-bold tracking-widest uppercase text-xs md:text-sm bg-accent/10 px-3 py-1 rounded-full">Step 3 of 5</span>
+                <span className="text-accent font-bold tracking-widest uppercase text-xs md:text-sm bg-accent/10 px-3 py-1 rounded-full">Step 2 of 4</span>
                 <h3 className="text-3xl md:text-4xl font-display font-bold text-primary pt-4">What's your full name?</h3>
              </div>
 
@@ -330,12 +230,12 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
             </div>
           </div>
         );
-      case 4:
+      case 3:
         return (
           <div className={containerClasses}>
              <div className={`text-center space-y-2 mb-8 shrink-0 ${mode === 'modal' ? '' : 'pt-4'}`}>
-                <span className="text-accent font-bold tracking-widest uppercase text-xs md:text-sm bg-accent/10 px-3 py-1 rounded-full">Step 4 of 5</span>
-                <h3 className="text-3xl md:text-4xl font-display font-bold text-primary pt-4">Where should we send the invite?</h3>
+                <span className="text-accent font-bold tracking-widest uppercase text-xs md:text-sm bg-accent/10 px-3 py-1 rounded-full">Step 3 of 4</span>
+                <h3 className="text-3xl md:text-4xl font-display font-bold text-primary pt-4">Where should we send details?</h3>
              </div>
 
              <div className={`${contentClasses} flex flex-col items-center justify-center`}>
@@ -364,13 +264,13 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
             </div>
           </div>
         );
-      case 5:
+      case 4:
         return (
           <div className={containerClasses}>
              <div className={`text-center space-y-2 mb-8 shrink-0 ${mode === 'modal' ? '' : 'pt-4'}`}>
                 <span className="text-accent font-bold tracking-widest uppercase text-xs md:text-sm bg-accent/10 px-3 py-1 rounded-full">Final Step</span>
                 <h3 className="text-3xl md:text-4xl font-display font-bold text-primary pt-4">Best number to reach you?</h3>
-                <p className="text-secondary text-lg">We'll send a text reminder before the meeting.</p>
+                <p className="text-secondary text-lg">We'll text you a confirmation.</p>
              </div>
 
              <div className={`${contentClasses} flex flex-col items-center justify-center`}>
@@ -416,7 +316,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ mode = 'section', onClose })
                 disabled={!localPhone || status === 'submitting'} 
                 className="w-full py-5 bg-primary text-white rounded-full font-bold text-xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-primary/20 neon-shadow"
                 >
-                {status === 'submitting' ? <Loader2 className="animate-spin" /> : <>Complete Booking <ArrowRight/></>}
+                {status === 'submitting' ? <Loader2 className="animate-spin" /> : <>Complete <ArrowRight/></>}
                 </button>
             </div>
           </div>
