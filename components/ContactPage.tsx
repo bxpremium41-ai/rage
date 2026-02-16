@@ -5,7 +5,7 @@ import { collection, addDoc } from 'firebase/firestore';
 
 export const ContactPage: React.FC = () => {
   useEffect(() => {
-    document.title = "Contact Us | Ragegrow";
+    document.title = "Contact Us | Leadsdocker";
   }, []);
 
   const [formData, setFormData] = useState({
@@ -64,8 +64,8 @@ export const ContactPage: React.FC = () => {
                     </div>
                     <div>
                         <span className="block text-xs font-bold text-secondary uppercase tracking-wider mb-2">Email Us</span>
-                        <a href="mailto:hello@ragegrow.com" className="text-xl md:text-2xl font-display font-bold text-primary hover:text-accent transition-colors">
-                            hello@ragegrow.com
+                        <a href="mailto:hello@leadsdocker.com" className="text-xl md:text-2xl font-display font-bold text-primary hover:text-accent transition-colors">
+                            hello@leadsdocker.com
                         </a>
                     </div>
                 </div>

@@ -60,8 +60,8 @@ export const ContactSection: React.FC = () => {
                     </div>
                     <div>
                         <span className="block text-xs font-bold text-secondary uppercase tracking-wider mb-2">Email Us</span>
-                        <a href="mailto:hello@ragegrow.com" className="text-xl md:text-2xl font-display font-bold text-primary hover:text-accent transition-colors">
-                            hello@ragegrow.com
+                        <a href="mailto:hello@leadsdocker.com" className="text-xl md:text-2xl font-display font-bold text-primary hover:text-accent transition-colors">
+                            hello@leadsdocker.com
                         </a>
                     </div>
                 </div>

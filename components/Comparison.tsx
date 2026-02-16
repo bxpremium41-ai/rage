@@ -56,7 +56,7 @@ export const Comparison: React.FC = () => {
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center">
                     <Check className="text-white w-5 h-5 md:w-6 md:h-6" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold">Ragegrow</h3>
+                <h3 className="text-xl md:text-2xl font-bold">Leadsdocker</h3>
             </div>
             
             <ul className="space-y-4 md:space-y-6 relative z-10">

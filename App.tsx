@@ -50,8 +50,8 @@ const App: React.FC = () => {
       />
 
       {/* Navigation */}
-      <nav className="fixed w-full top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-secondary/10 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+      <nav className="absolute w-full top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-secondary/10 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-6 h-28 flex justify-between items-center">
           <div 
             className="cursor-pointer" 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
